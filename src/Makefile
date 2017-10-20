@@ -1,7 +1,7 @@
-CXXFLAGS += -I../../cats-cpp/src
+CXXFLAGS += -I../../cats-cpp/src `sdl2-config --cflags`
 
 CatsExample: CatsExample.o
 	g++ -o $@ $^ -L../../cats-cpp/src -lcats `sdl2-config --libs`
 
 clean:
-	@rm *.o CatsExample
+	@rm -f *.o CatsExample
