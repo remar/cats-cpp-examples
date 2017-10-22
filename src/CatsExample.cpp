@@ -5,7 +5,9 @@ int main() {
   Cats::Init(640, 480);
   Cats::SetBackgroundColor(0xff, 0, 0);
   Cats::LoadSprite("../data/sprite.json");
-  Cats::CreateSpriteInstance("sprite");
+  int spriteId = Cats::CreateSpriteInstance("sprite");
+  Cats::RemoveSpriteInstance(spriteId);
+  spriteId = Cats::CreateSpriteInstance("sprite");
 
   int startTime = SDL_GetTicks();
   int lastFrameTime = SDL_GetTicks();
