@@ -43,9 +43,11 @@ int main() {
     if(x >= maxX) {
       dx = -dx;
       x = maxX;
+      Cats::SetAnimation(spriteId, "walk left");
     } else if(x <= minX) {
       dx = -dx;
       x = minX;
+      Cats::SetAnimation(spriteId, "walk right");
     }
 
     Cats::SetSpritePosition(spriteId, x, screenHeight / 2);
