@@ -1,8 +1,11 @@
 #include "Cats.h"
 #include <SDL.h>
 
+const int screenWidth = 640;
+const int screenHeight = 480;
+
 int main() {
-  Cats::Init(640, 480);
+  Cats::Init(screenWidth, screenHeight);
   Cats::SetBackgroundColor(0xff, 0, 0);
   Cats::LoadSprite("../data/sprite.json");
   int spriteId = Cats::CreateSpriteInstance("sprite");
@@ -13,6 +16,10 @@ int main() {
   bool running = true;
   bool visible = true;
   SDL_Event event;
+  float x = 0;
+  float dx = 100;
+  float maxX = screenWidth - 16;
+  float minX = 0;
 
   while(running) {
     while(SDL_PollEvent(&event)) {
@@ -31,6 +38,17 @@ int main() {
 
     float delta = (SDL_GetTicks() - lastFrameTime) / 1000.0f;
     lastFrameTime = SDL_GetTicks();
+
+    x += dx * delta;
+    if(x >= maxX) {
+      dx = -dx;
+      x = maxX;
+    } else if(x <= minX) {
+      dx = -dx;
+      x = minX;
+    }
+
+    Cats::SetSpritePosition(spriteId, x, screenHeight / 2);
     Cats::Redraw(delta);
   }
 
