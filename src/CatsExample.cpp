@@ -12,6 +12,8 @@ int main() {
   Cats::RemoveSpriteInstance(spriteId);
   spriteId = Cats::CreateSpriteInstance("sprite");
   Cats::LoadTileset("../data/tiles.json");
+  Cats::SetupTileLayer(20, 15, 32, 32);
+  Cats::SetTile(0, 0, "tiles", 0, 0);
 
   int lastFrameTime = SDL_GetTicks();
   bool running = true;
