@@ -53,7 +53,13 @@ int main() {
   Cats::RemoveSpriteInstance(spriteId);
   Cats::LoadTileset("../data/tiles.json");
   Cats::SetupTileLayer(20, 15, 32, 32);
-  Cats::SetTile(0, 0, "tiles", 0, 0);
+
+  for(int i = 0;i < 10;i++) {
+    Cats::SetTile(i, 0, "tiles", 0, 0);
+    Cats::SetTile(i, 9, "tiles", 0, 0);
+    Cats::SetTile(0, i, "tiles", 0, 0);
+    Cats::SetTile(9, i, "tiles", 0, 0);
+  }
 
   int lastFrameTime = SDL_GetTicks();
   bool running = true;
@@ -61,6 +67,8 @@ int main() {
   SDL_Event event;
 
   int startY = 0;
+  float scrollx = 0;
+  float scrolldx = 200;
 
   goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(screenHeight / 2)));
 
@@ -99,6 +107,16 @@ int main() {
     for(auto &good : goods) {
       good->update(delta);
     }
+
+    scrollx += delta * scrolldx;
+    if(scrollx >= 200) {
+      scrollx = 200;
+      scrolldx = -scrolldx;
+    } else if(scrollx <= 0) {
+      scrollx = 0;
+      scrolldx = -scrolldx;
+    }
+    Cats::SetScroll(scrollx, 0);
 
     Cats::Redraw(delta);
   }
