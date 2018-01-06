@@ -7,40 +7,46 @@ const int screenWidth = 640;
 const int screenHeight = 480;
 
 class CaptainGood {
-public:
-  CaptainGood(int y) : x(0), y(y) {
-    spriteId = Cats::CreateSpriteInstance("sprite");
-  }
-
-  ~CaptainGood() {
-    Cats::RemoveSpriteInstance(spriteId);
-  }
-
-  void update(float delta) {
-    x += dx * delta;
-    if(x >= maxX) {
-      dx = -dx;
-      x = maxX;
-      Cats::SetAnimation(spriteId, "walk left");
-    } else if(x <= minX) {
-      dx = -dx;
-      x = minX;
-      Cats::SetAnimation(spriteId, "walk right");
+  public:
+    CaptainGood(int y) : x(0), y(y), pause(false) {
+      spriteId = Cats::CreateSpriteInstance("sprite");
     }
-    Cats::SetSpritePosition(spriteId, x, y);
-  }
 
-  void setVisible(bool show) {
-    Cats::ShowSprite(spriteId, show);
-  }
+    ~CaptainGood() {
+      Cats::RemoveSpriteInstance(spriteId);
+    }
 
-private:
-  int spriteId;
-  float x;
-  int y;
-  float dx = 100;
-  float maxX = screenWidth - 16;
-  float minX = 0;
+    void update(float delta) {
+      x += dx * delta;
+      if(x >= maxX) {
+        dx = -dx;
+        x = maxX;
+        Cats::SetAnimation(spriteId, "walk left");
+      } else if(x <= minX) {
+        dx = -dx;
+        x = minX;
+        Cats::SetAnimation(spriteId, "walk right");
+      }
+      Cats::SetSpritePosition(spriteId, x, y);
+    }
+
+    void setVisible(bool show) {
+      Cats::ShowSprite(spriteId, show);
+    }
+
+    void togglePause() {
+      pause = !pause;
+      Cats::PauseAnimation(spriteId, pause);
+    }
+
+  private:
+    int spriteId;
+    float x;
+    int y;
+    float dx = 100;
+    float maxX = screenWidth - 16;
+    float minX = 0;
+    bool pause;
 };
 
 int main() {
@@ -65,6 +71,7 @@ int main() {
   bool running = true;
   bool visible = true;
   SDL_Event event;
+  bool pauseAll = false;
 
   int startY = 0;
   float scrollx = 0;
@@ -75,28 +82,37 @@ int main() {
   while(running) {
     while(SDL_PollEvent(&event)) {
       if(event.type == SDL_QUIT) {
-	running = false;
+        running = false;
       } else if(event.type == SDL_KEYDOWN && event.key.repeat == 0) {
-	switch(event.key.keysym.sym) {
-	case SDLK_ESCAPE:
-	  running = false;
-	  break;
-	case SDLK_h:
-	  visible = !visible;
-	  for(auto &good : goods) {
-	    good->setVisible(visible);
-	  }
-	  break;
-	case SDLK_c:
-	  goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(startY)));
-	  startY = (startY + 24) % screenHeight;
-	  break;
-	case SDLK_d:
-	  if(!goods.empty()) {
-	    goods.pop_back();
-	  }
-	  break;
-	}
+        switch(event.key.keysym.sym) {
+          case SDLK_ESCAPE:
+            running = false;
+            break;
+          case SDLK_h:
+            visible = !visible;
+            for(auto &good : goods) {
+              good->setVisible(visible);
+            }
+            break;
+          case SDLK_c:
+            goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(startY)));
+            startY = (startY + 24) % screenHeight;
+            break;
+          case SDLK_d:
+            if(!goods.empty()) {
+              goods.pop_back();
+            }
+            break;
+          case SDLK_o:
+            pauseAll = !pauseAll;
+            Cats::PauseAnimations(pauseAll);
+            break;
+          case SDLK_p:
+            if(goods.size() > 0) {
+              (goods.front())->togglePause();
+            }
+            break;
+        }
       } else if(event.type == SDL_KEYUP) {
       }
     }
