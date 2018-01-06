@@ -53,6 +53,8 @@ int main() {
   std::list<std::unique_ptr<CaptainGood>> goods;
 
   Cats::Init(screenWidth, screenHeight);
+  Cats::ShowPointer(false);
+  Cats::SetWindowTitle("CatsExample!");
   Cats::SetBackgroundColor(0xff, 0, 0);
   Cats::LoadSprite("../data/sprite.json");
   int spriteId = Cats::CreateSpriteInstance("sprite");
@@ -72,10 +74,14 @@ int main() {
   bool visible = true;
   SDL_Event event;
   bool pauseAll = false;
+  bool fullscreen = false;
 
   int startY = 0;
   float scrollx = 0;
   float scrolldx = 200;
+
+  int relativeMoveSprite = Cats::CreateSpriteInstance("sprite");
+  Cats::SetSpritePosition(relativeMoveSprite, 100, 100);
 
   goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(screenHeight / 2)));
 
@@ -85,33 +91,43 @@ int main() {
         running = false;
       } else if(event.type == SDL_KEYDOWN && event.key.repeat == 0) {
         switch(event.key.keysym.sym) {
-          case SDLK_ESCAPE:
-            running = false;
-            break;
-          case SDLK_h:
-            visible = !visible;
-            for(auto &good : goods) {
-              good->setVisible(visible);
-            }
-            break;
-          case SDLK_c:
-            goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(startY)));
-            startY = (startY + 24) % screenHeight;
-            break;
-          case SDLK_d:
-            if(!goods.empty()) {
-              goods.pop_back();
-            }
-            break;
-          case SDLK_o:
-            pauseAll = !pauseAll;
-            Cats::PauseAnimations(pauseAll);
-            break;
-          case SDLK_p:
-            if(goods.size() > 0) {
-              (goods.front())->togglePause();
-            }
-            break;
+	case SDLK_ESCAPE:
+	  running = false;
+	  break;
+	case SDLK_h:
+	  visible = !visible;
+	  for(auto &good : goods) {
+	    good->setVisible(visible);
+	  }
+	  break;
+	case SDLK_c:
+	  goods.push_back(std::unique_ptr<CaptainGood>(new CaptainGood(startY)));
+	  startY = (startY + 24) % screenHeight;
+	  break;
+	case SDLK_d:
+	  if(!goods.empty()) {
+	    goods.pop_back();
+	  }
+	  break;
+	case SDLK_o:
+	  pauseAll = !pauseAll;
+	  Cats::PauseAnimations(pauseAll);
+	  break;
+	case SDLK_p:
+	  if(goods.size() > 0) {
+	    (goods.front())->togglePause();
+	  }
+	  break;
+	case SDLK_f:
+	  fullscreen = !fullscreen;
+	  Cats::SetFullscreen(fullscreen);
+	  break;
+	case SDLK_LEFT:
+	  Cats::MoveSprite(relativeMoveSprite, -10, 0);
+	  break;
+	case SDLK_RIGHT:
+	  Cats::MoveSprite(relativeMoveSprite, 10, 0);
+	  break;
         }
       } else if(event.type == SDL_KEYUP) {
       }
